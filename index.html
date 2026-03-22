@@ -1,317 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Monitoramento Busca Preço</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-body: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --accent-blue: #3b82f6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --control-bg: #334155;
-            --gradient: radial-gradient(circle at top left, #1e293b, #0f172a);
-        }
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-        .light-mode {
-            --bg-body: #f1f5f9;
-            --bg-card: rgba(255, 255, 255, 0.8);
-            --text-main: #1e293b;
-            --text-dim: #64748b;
-            --control-bg: #e2e8f0;
-            --gradient: radial-gradient(circle at top left, #ffffff, #e2e8f0);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gradient);
-            background-attachment: fixed;
-            color: var(--text-main);
-            margin: 0;
-            padding: 30px;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        /* Botão no Canto Superior Direito */
-        .theme-toggle-container {
-            position: absolute;
-            top: 25px;
-            right: 30px;
-            z-index: 999;
-        }
-
-        #themeBtn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-
-        #themeBtn:hover { transform: scale(1.1); }
-
-        h1 { font-weight: 700; letter-spacing: -1px; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-
-        .controls { 
-            background: var(--bg-card);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 16px;
-            margin: 0 auto 40px auto; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .container { 
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-            gap: 20px;
-            max-width: 1600px;
-            margin: 0 auto; 
-        }
-
-        .card { 
-            padding: 20px;
-            border-radius: 16px;
-            background: var(--bg-card);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-        }
-        
-        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-        .online { border-left: 5px solid var(--success); }
-        .offline { border-left: 5px solid var(--danger); animation: pulse-border 2s infinite; }
-
-        @keyframes pulse-border {
-            0% { border-left-color: var(--danger); }
-            50% { border-left-color: #7f1d1d; }
-            100% { border-left-color: var(--danger); }
-        }
-
-        .stats-grid {
-            background: rgba(0, 0, 0, 0.05);
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 15px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.8em;
-        }
-
-        .health-bar-bg { width: 100%; height: 4px; background: var(--control-bg); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-        .health-bar-fill { height: 100%; background: var(--success); transition: width 0.5s ease; }
-
-        select, button {
-            background: var(--control-bg);
-            color: var(--text-main);
-            border: 1px solid rgba(0,0,0,0.1);
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover { filter: brightness(1.1); }
-        .btn-save { background: var(--accent-blue); color: white; border: none; }
-        .edit-btn { position: absolute; top: 15px; right: 15px; color: var(--text-dim); background: none; border: none; font-size: 1.1em; padding: 0; }
-
-        .developer-footer {
-            margin-top: 60px;
-            padding: 20px;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
-            color: var(--text-dim);
-            font-size: 0.85em;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        .developer-footer span { color: var(--accent-blue); font-weight: 700; }
-    </style>
-</head>
-<body>
-
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="theme-toggle-container">
-        <button onclick="toggleTheme()" id="themeBtn">
-            <i class="fa-solid fa-moon"></i>
-        </button>
+      <button onclick="toggleTheme()" id="themeBtn">
+        <i class="fa-solid fa-moon"></i>
+      </button>
     </div>
 
-    <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+    <audio
+      id="alertSound"
+      src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+    ></audio>
 
-    <div class="header-section" style="text-align: center;">
-        <h1><i class="fa-solid fa-satellite-dish" style="color:var(--accent-blue)"></i> Monitoramento Busca Preço</h1>
-        <p id="update-timer" style="color: var(--text-dim); font-size: 0.9em; margin-bottom: 30px;">Iniciando ativos...</p>
+    <div class="header-section" style="text-align: center">
+      <h1>
+        <i
+          class="fa-solid fa-satellite-dish"
+          style="color: var(--accent-blue)"
+        ></i>
+        Monitoramento Busca Preço
+      </h1>
+      <p
+        id="update-timer"
+        style="color: var(--text-dim); font-size: 0.9em; margin-bottom: 30px"
+      >
+        Iniciando ativos...
+      </p>
     </div>
 
     <div class="controls">
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <i class="fa-solid fa-filter" style="color: var(--text-dim)"></i>
-            <select id="filtroStatus" onchange="renderizar()">
-                <option value="todos">Todos Dispositivos</option>
-                <option value="online">Online</option>
-                <option value="offline">Offline</option>
-            </select>
-        </div>
-        
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-save" onclick="salvarNoNavegador()"><i class="fa-solid fa-floppy-disk"></i> Salvar Layout</button>
-            <button onclick="resetarEstatisticas()"><i class="fa-solid fa-rotate"></i> Resetar Métricas</button>
-        </div>
+      <div style="display: flex; gap: 15px; align-items: center">
+        <i class="fa-solid fa-filter" style="color: var(--text-dim)"></i>
+        <select id="filtroStatus" onchange="renderizar()">
+          <option value="todos">Todos Dispositivos</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
+      </div>
 
-        <div id="global-stats" style="font-weight: 600; font-size: 0.9em; letter-spacing: 1px;"></div>
+      <div style="display: flex; gap: 10px">
+        <button class="btn-save" onclick="salvarNoNavegador()">
+          <i class="fa-solid fa-floppy-disk"></i> Salvar Layout
+        </button>
+        <button onclick="resetarEstatisticas()">
+          <i class="fa-solid fa-rotate"></i> Resetar Métricas
+        </button>
+      </div>
+
+      <div
+        id="global-stats"
+        style="font-weight: 600; font-size: 0.9em; letter-spacing: 1px"
+      ></div>
     </div>
 
     <div class="container" id="painel"></div>
 
     <footer class="developer-footer">
-        <p>Todos os direitos reservados. Desenvolvido por: <span>Deivison Silva</span></p>
+      <p>
+        Todos os direitos reservados. Desenvolvido por:
+        <span>Deivison Silva</span>
+      </p>
     </footer>
 
-    <script>
-        const listaPadrao = [
-            { ip: "10.127.212.227", nome: "Frios" }, { ip: "10.127.212.231", nome: "01 A" },
-            { ip: "10.127.212.230", nome: "01 B" }, { ip: "10.127.212.245", nome: "05 A" },
-            { ip: "10.127.212.236", nome: "06 B" }, { ip: "10.127.212.229", nome: "09 A" },
-            { ip: "10.127.212.235", nome: "10 B" }, { ip: "10.127.212.228", nome: "13 A" },
-            { ip: "10.127.212.234", nome: "14 B" }, { ip: "10.127.212.237", nome: "18 A" },
-            { ip: "10.127.212.238", nome: "18 B" }, { ip: "10.127.212.226", nome: "Terminal 01" }, 
-            { ip: "10.127.212.232", nome: "Terminal 07" }, { ip: "10.127.212.233", nome: "Terminal 08" },
-            { ip: "10.127.212.239", nome: "Terminal 14" }, { ip: "10.127.212.243", nome: "Terminal 15" },
-            { ip: "10.127.212.244", nome: "Terminal 16" }, { ip: "10.127.212.246", nome: "Terminal 18" },
-            { ip: "10.127.212.247", nome: "Terminal 19" }, { ip: "10.127.212.248", nome: "Terminal 20" },
-            { ip: "10.127.212.249", nome: "Terminal 21" }, { ip: "10.127.212.250", nome: "Terminal 22" },
-            { ip: "10.127.212.251", nome: "Terminal 23" }, { ip: "10.127.212.252", nome: "Terminal 24" }
-        ];
+    <div id="modal-backdrop" class="modal-backdrop" style="display: none;"></div>
+    <div id="modal" class="modal" style="display: none;">
+        <div id="modal-title" class="modal-title"></div>
+        <div id="modal-body" class="modal-body"></div>
+        <div id="modal-footer" class="modal-footer"></div>
+    </div>
 
-        let dispositivos = JSON.parse(localStorage.getItem('monitor_gertec_final_v8'));
-
-        if (!dispositivos) {
-            dispositivos = listaPadrao.map((item, index) => ({
-                id: index, nome: item.nome, ip: item.ip, status: 'verificando', latencia: 0, testes: 0, sucessos: 0, uptime: 100
-            }));
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            const btn = document.getElementById('themeBtn');
-            body.classList.toggle('light-mode');
-            const isLight = body.classList.contains('light-mode');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            btn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-        }
-
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-            document.getElementById('themeBtn').innerHTML = '<i class="fa-solid fa-sun"></i>';
-        }
-
-        function renderizar() {
-            const painel = document.getElementById("painel");
-            const filtro = document.getElementById("filtroStatus").value;
-            let offCount = 0;
-            painel.innerHTML = "";
-
-            dispositivos.forEach((disp) => {
-                if (disp.status === 'offline') offCount++;
-                if (filtro !== "todos" && disp.status !== filtro) return;
-
-                const card = document.createElement("div");
-                card.className = `card ${disp.status}`;
-                card.innerHTML = `
-                    <button class="edit-btn" onclick="editarCard(${disp.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <span style="font-weight:600; font-size:1.1em; display:block; margin-bottom:2px;">${disp.nome}</span>
-                    <span style="color:var(--text-dim); font-size:0.85em; font-family:monospace;">${disp.ip}</span>
-                    <div class="health-bar-bg"><div class="health-bar-fill" style="width: ${disp.uptime}%"></div></div>
-                    <div class="stats-grid">
-                        <div><i class="fa-solid fa-bolt" style="color:var(--accent-blue)"></i> ${disp.latencia}ms</div>
-                        <div><i class="fa-solid fa-heart" style="color:var(--accent-blue)"></i> ${disp.uptime}%</div>
-                        <div><b>${disp.status.toUpperCase()}</b></div>
-                        <div>Falhas: ${disp.testes - disp.sucessos}</div>
-                    </div>
-                `;
-                painel.appendChild(card);
-            });
-            // Cores aplicadas diretamente aqui para garantir o contraste
-            document.getElementById("global-stats").innerHTML = 
-                `<span style="color:var(--success)">ON: ${dispositivos.length - offCount}</span> | 
-                 <span style="color:var(--danger)">OFF: ${offCount}</span>`;
-        }
-
-        async function verificarConexoes() {
-            const sound = document.getElementById("alertSound");
-            let houveNovaQueda = false;
-
-            const tarefas = dispositivos.map(async (disp) => {
-                const inicio = performance.now();
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3500);
-                const statusAnterior = disp.status;
-                disp.testes++;
-
-                try {
-                    await fetch(`http://${disp.ip}`, { mode: 'no-cors', cache: 'no-store', signal: controller.signal });
-                    disp.latencia = Math.round(performance.now() - inicio);
-                    disp.status = "online";
-                    disp.sucessos++;
-                } catch (e) {
-                    disp.status = "offline";
-                    disp.latencia = "---";
-                    if (statusAnterior === "online") houveNovaQueda = true;
-                } finally {
-                    clearTimeout(timeoutId);
-                    disp.uptime = disp.testes > 0 ? ((disp.sucessos / disp.testes) * 100).toFixed(1) : 100;
-                }
-            });
-
-            await Promise.all(tarefas);
-            if (houveNovaQueda) sound.play().catch(() => {});
-            document.getElementById("update-timer").innerText = "Sincronizado em: " + new Date().toLocaleTimeString();
-            renderizar();
-        }
-
-        function resetarEstatisticas() {
-            if(confirm("Deseja zerar as métricas?")) {
-                dispositivos.forEach(d => { d.testes = 0; d.sucessos = 0; d.uptime = 100; d.latencia = 0; });
-                salvarNoNavegador();
-                renderizar();
-            }
-        }
-
-        function editarCard(id) {
-            const idx = dispositivos.findIndex(d => d.id === id);
-            const n = prompt("Novo nome:", dispositivos[idx].nome);
-            if (n) { dispositivos[idx].nome = n; renderizar(); salvarNoNavegador(); }
-        }
-
-        function salvarNoNavegador() { localStorage.setItem('monitor_gertec_final_v8', JSON.stringify(dispositivos)); }
-
-        renderizar();
-        verificarConexoes();
-        setInterval(verificarConexoes, 20000);
-    </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
