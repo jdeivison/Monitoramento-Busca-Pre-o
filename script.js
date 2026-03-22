@@ -157,7 +157,6 @@ async function verificarConexoes() {
 
     try {
       await fetch(`http://${disp.ip}`, {
-        method: 'HEAD',
         mode: "no-cors",
         cache: "no-store",
         signal: controller.signal,
